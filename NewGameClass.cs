@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
@@ -16,6 +17,7 @@ namespace pong
         int left = Console.WindowWidth / 4;
         int right = Console.WindowWidth * 3 / 4;
         rockets Rockets = new rockets();
+        aBall ball = new aBall();
         public directions detectKey()
         {
             ConsoleKeyInfo info = Console.ReadKey();
@@ -62,15 +64,20 @@ namespace pong
                 Console.Clear();
             }
         }
+        public directions RocketCollideBall()
+        {
+            if(ball.X == Rockets.LocationLeft && Rockets.Tip <= ball.Y && ball.Y <= Rockets.Tip+Rockets.Height )
+            {
+                return directions.right;
+            }
+            else if(ball.X == Rockets.LocationRight && Rockets.Tip <= ball.Y && ball.Y <= Rockets.Tip + Rockets.Height)
+            {
+                return directions.left;
+            }
+
+        }
     }
-    enum directions
-    {
-        up,
-        down,
-        left,
-        right,
-        none
-    }
+        
     class rockets
     {
         int height = 5;
@@ -79,6 +86,10 @@ namespace pong
         int locationLeft = Console.WindowWidth / 4 + 2;
         int locationRight = Console.WindowWidth * 3 / 4 - 2;
         public rockets() { }
+        public int Tip { get;}
+        public int Height { get; }
+        public int LocationLeft { get; }
+        public int LocationRight { get;}
         public void printRockets()
         {
             for(int i = tip; i <= tip + height; i++)
@@ -109,24 +120,55 @@ namespace pong
     }
     class aBall
     {
+        int top = Console.WindowHeight / 4;
+        int bottom = Console.WindowHeight * 3 / 4;
         char face = '@';
         directions direction = directions.left;
         int x = Console.WindowWidth / 2, y = Console.WindowHeight / 2;
         public aBall() { }
+        public int X { get; set; }
+        public int Y { get; set; }
         public void printBall()
         {
             Console.SetCursorPosition(x,y);
             Console.Write(face);
         }
-        public void switchDirection()
+        public void moveaBall()
         {
-            if(this.direction == directions.left)
-                this.direction = directions.right;
-            else if (this.direction == directions.right)
-                this.direction = directions.left;
+            switch (direction)
+            {
+                case directions.left:
+                    x--;
+                    break;
+                case directions.right:
+                    x++;
+                    break;
+                
+                default:
+                    break;
+            }
+            if (y <= top)
+                y++;
+            else if (y >= bottom)
+                y--;
+            
         }
-        public void moveBall()
+        public void switchBallDirection(directions direct)
         {
+            this.direction = direct;
         }
+        
+    }
+    enum directions
+    {
+        up,
+        UpRight,
+        right,
+        DownRight,
+        down,
+        DownLeft,
+        left,
+        UpLeft,
+        none
     }
 }
